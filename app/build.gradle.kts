@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    kotlin("android")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -45,6 +47,12 @@ dependencies {
     implementation(libs.material)
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.8")
     implementation("androidx.navigation:navigation-ui-ktx:2.9.8")
+    // Room: the local database library
+    implementation("androidx.room:room-runtime:2.7.2")
+    implementation("androidx.room:room-ktx:2.7.2")
+    // Generates the Room code (ksp, not implementation)
+    kotlin("android")
+    ksp("androidx.room:room-compiler:2.7.2")
     // Stage 2 - ViewModel dependencies
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
