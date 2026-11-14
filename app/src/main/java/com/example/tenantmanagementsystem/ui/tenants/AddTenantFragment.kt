@@ -7,15 +7,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.tenantmanagementsystem.data.model.Tenant
-import com.example.tenantmanagementsystem.data.repository.TenantRepository
 import com.example.tenantmanagementsystem.databinding.FragmentAddTenantBinding
+import androidx.fragment.app.activityViewModels
+import com.example.tenantmanagementsystem.ui.viewmodel.TenantViewModel
 
 class AddTenantFragment : Fragment() {
 
     private var _binding: FragmentAddTenantBinding? = null
 
     private val binding get() = _binding!!
+
+    // Shared with the other Fragments in MainActivity
+    private val viewModel: TenantViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,48 +42,25 @@ class AddTenantFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.saveTenantButton.setOnClickListener {
+            // The ViewModel validates the input and adds the tenant
+            val tenant = viewModel.addTenant(
+                binding.tenantNameEditText.text.toString(),
+                binding.tenantPhoneEditText.text.toString(),
+                binding.tenantRentEditText.text.toString()
+            )
 
-            val name = binding.tenantNameEditText.text.toString().trim()
-            val phone = binding.tenantPhoneEditText.text.toString().trim()
-            val rent = binding.tenantRentEditText.text.toString().trim()
-
-            if (name.isEmpty() || phone.isEmpty() || rent.isEmpty()) {
-
+            if (tenant == null) {
                 Toast.makeText(
                     requireContext(),
                     "Please fill in all fields",
                     Toast.LENGTH_SHORT
                 ).show()
-
-            } else if (rent.toDoubleOrNull() == null) {
-
-                Toast.makeText(
-                    requireContext(),
-                    "Please enter a valid rent amount",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-            } else {
-
-                val tenant = Tenant(
-                    name = name,
-                    phone = phone,
-                    rent = rent
-                )
-
-                TenantRepository.addTenant(tenant)
-
-                val action = AddTenantFragmentDirections
-                    .actionAddTenantFragmentToViewTenantsFragment(tenant)
-
-                findNavController().navigate(action)
-
-                Toast.makeText(
-                    requireContext(),
-                    "Tenant saved successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
+                return@setOnClickListener
             }
+
+            val action = AddTenantFragmentDirections
+                .actionAddTenantFragmentToViewTenantsFragment(tenant)
+            findNavController().navigate(action)
         }
     }
 
