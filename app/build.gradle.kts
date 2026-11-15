@@ -12,6 +12,7 @@ kotlin {
         )
     }
 }
+
 android {
     namespace = "com.example.tenantmanagementsystem"
     compileSdk {
